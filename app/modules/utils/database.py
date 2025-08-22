@@ -47,6 +47,29 @@ class Database:
             if conn:
                 conn.close()
 
+    def _create_user(self, cursor: sqlite3.Cursor, user_id: str, auth_token: str, status_data: Optional[Dict[str, Any]] = None, set_last_updated: bool = False) -> None:
+        now_iso = datetime.now().isoformat()
+        if set_last_updated and status_data is not None:
+            cursor.execute(
+                "INSERT INTO users (user_id, auth_token, created_at, last_updated, status_data) VALUES (?, ?, ?, ?, ?)",
+                (user_id, auth_token, now_iso, now_iso, json.dumps(status_data)),
+            )
+        else:
+            cursor.execute(
+                "INSERT INTO users (user_id, auth_token, created_at, status_data) VALUES (?, ?, ?, ?)",
+                (user_id, auth_token, now_iso, '{}'),
+            )
+
+    def _user_exists(self, cursor: sqlite3.Cursor, user_id: str) -> bool:
+        cursor.execute("SELECT 1 FROM users WHERE user_id = ?", (user_id,))
+        return cursor.fetchone() is not None
+
+    def _update_user_status(self, cursor: sqlite3.Cursor, user_id: str, status_data: Dict[str, Any]) -> None:
+        cursor.execute(
+            "UPDATE users SET status_data = ?, last_updated = ? WHERE user_id = ?",
+            (json.dumps(status_data), datetime.now().isoformat(), user_id),
+        )
+
     def authenticate_user(self, user_id: str, auth_token: str) -> bool:
         try:
             with self._get_connection() as conn:
@@ -67,35 +90,38 @@ class Database:
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()
-                
-                # Check if user exists
-                cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
-                user_exists = cursor.fetchone() is not None
-                
-                if not user_exists:
-                    # Create new user
-                    cursor.execute(
-                        "INSERT INTO users (user_id, auth_token, created_at, last_updated, status_data) VALUES (?, ?, ?, ?, ?)",
-                        (user_id, auth_token, datetime.now().isoformat(), datetime.now().isoformat(), json.dumps(status_data))
-                    )
-                    conn.commit()
-                    logger.info(f"Created new user: {user_id}")
-                    return True, "Status updated successfully", True
-                else:
+                # Check if user exists first
+                if self._user_exists(cursor, user_id):
                     # Authenticate existing user
                     if not self.authenticate_user(user_id, auth_token):
-                        logger.warning(f"Authentication failed for user: {user_id}")
                         return False, "Authentication failed: Invalid user ID or token", False
-                    
+
                     # Update existing user's status
-                    cursor.execute(
-                        "UPDATE users SET status_data = ?, last_updated = ? WHERE user_id = ?",
-                        (json.dumps(status_data), datetime.now().isoformat(), user_id)
-                    )
+                    self._update_user_status(cursor, user_id, status_data)
                     conn.commit()
-                    logger.info(f"Status updated for user: {user_id}")
                     return True, "Status updated successfully", False
-                    
+                else:
+                    # Create user as register_user would, then update status
+                    created = True
+                    try:
+                        self._create_user(cursor, user_id, auth_token)
+                    except sqlite3.IntegrityError:
+                        # Race: user created after existence check
+                        created = False
+
+                    if not created:
+                        # Now treat as existing user
+                        if not self.authenticate_user(user_id, auth_token):
+                            return False, "Authentication failed: Invalid user ID or token", False
+                        self._update_user_status(cursor, user_id, status_data)
+                        conn.commit()
+                        return True, "Status updated successfully", False
+
+                    # Newly created user: now update their status
+                    self._update_user_status(cursor, user_id, status_data)
+                    conn.commit()
+                    return True, "Status updated successfully", True
+
         except sqlite3.Error as e:
             logger.error(f"Failed to update status for user {user_id}: {e}")
             return False, "Database error: Failed to save status", False
@@ -106,18 +132,16 @@ class Database:
                 cursor = conn.cursor()
 
                 # Check if user already exists
-                cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
-                if cursor.fetchone() is not None:
-                    logger.warning(f"Attempted to register existing user: {user_id}")
+                if self._user_exists(cursor, user_id):
                     return False, "User already exists"
-
+                
                 # Insert new user
-                cursor.execute(
-                    "INSERT INTO users (user_id, auth_token, created_at, status_data) VALUES (?, ?, ?, ?)",
-                    (user_id, auth_token, datetime.now().isoformat(), '{}')
-                )
+                try:
+                    self._create_user(cursor, user_id, auth_token)
+                except sqlite3.IntegrityError:
+                    return False, "User already exists"
+                
                 conn.commit()
-                logger.info(f"Registered new user: {user_id}")
                 return True, "User registered successfully"
         except sqlite3.Error as e:
             logger.error(f"Failed to register user {user_id}: {e}")

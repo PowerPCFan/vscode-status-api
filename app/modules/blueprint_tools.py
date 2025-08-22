@@ -13,8 +13,8 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
         gs_blueprint = Blueprint('get_status', __name__)
         gs_blueprint.route('/get-status', methods=['GET'])(limiter.limit("45 per minute")(get_status.route))
 
-        ru_blueprint = Blueprint('register_user', __name__)
-        ru_blueprint.route('/register-user', methods=['POST'])(limiter.limit("5 per hour")(register_user.route))
+        # ru_blueprint = Blueprint('register_user', __name__)
+        # ru_blueprint.route('/register-user', methods=['POST'])(limiter.limit("5 per hour")(register_user.route))
     else:
         hc_blueprint = Blueprint('health_check', __name__)
         hc_blueprint.route('/', methods=['GET'])(healthcheck.route)
@@ -25,7 +25,12 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
         gs_blueprint = Blueprint('get_status', __name__)
         gs_blueprint.route('/get-status', methods=['GET'])(get_status.route)
 
-        ru_blueprint = Blueprint('register_user', __name__)
-        ru_blueprint.route('/register-user', methods=['POST'])(register_user.route)
+        # ru_blueprint = Blueprint('register_user', __name__)
+        # ru_blueprint.route('/register-user', methods=['POST'])(register_user.route)
 
-    return [hc_blueprint, us_blueprint, gs_blueprint, ru_blueprint]
+    return [
+        hc_blueprint,
+        us_blueprint,
+        gs_blueprint,
+        # ru_blueprint
+    ]

@@ -10,7 +10,6 @@ A companion API for my vscode-status-extension VSCode extension.
 - GET `https://vscode-status.powerpcfan.xyz/` - health check endpoint, returns `{"message": "OK"}` if OK
 - POST `https://vscode-status.powerpcfan.xyz/update-status` - update's user's status. Requires token and user ID. 
 - GET `https://vscode-status.powerpcfan.xyz/get-status` - retrieves the user's status from the API. You only need the user ID.
-- POST `https://vscode-status.powerpcfan.xyz/register-user` - registers a new user in the database.
 
 ## Self-hosting instructions:
 

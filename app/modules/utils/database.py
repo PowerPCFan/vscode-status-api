@@ -198,15 +198,6 @@ class Database:
             return False
 
     def cleanup_old_status(self, user_id: str, max_age_minutes: int = 10) -> bool:
-        """Clear a specific user's status data if it hasn't been updated in the specified time period.
-        
-        Args:
-            max_age_minutes: Maximum age in minutes before a status is considered stale
-            user_id: The specific user ID to check and potentially clear status data
-            
-        Returns:
-            True if status data was cleared, False if not cleared
-        """
         try:
             with self._get_connection() as conn:
                 cursor = conn.cursor()

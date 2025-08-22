@@ -3,6 +3,26 @@ from modules.utils.logger import logger
 from modules.utils.database import db
 from modules.utils.request import remote_addr
 
+# Returns something like this:
+
+# {
+#   "created_at": "2025-08-22T11:49:09.125405",
+#   "last_updated": "2025-08-22T08:55:42.766476",
+#   "status": {
+#     "appName": "Visual Studio Code",
+#     "details": "Editing file.py",
+#     "fileName": "file.py",
+#     "gitBranch": "master",
+#     "gitRepo": "",
+#     "isDebugging": false,
+#     "language": "python",
+#     "languageIcon": "https://raw.githubusercontent.com/PowerPCFan/vscode-status-extension/refs/heads/master/assets/icons/python.png",
+#     "timestamp": 1755863352174,
+#     "workspace": "vscode-workspace-name"
+#   },
+#   "user_id": "1234567890123456"
+# }
+
 def route() -> tuple[Response, int]:
     try:
         logger.info(f"Incoming /get-status request from {remote_addr}")

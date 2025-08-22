@@ -1,10 +1,11 @@
 from flask import request, jsonify, Response
 from modules.utils.logger import logger
 from modules.utils.database import db
+from modules.utils.request import remote_addr
 
 def route() -> tuple[Response, int]:
     try:
-        logger.info(f"Incoming /get-status request from {request.remote_addr}")
+        logger.info(f"Incoming /get-status request from {remote_addr}")
 
         user_id = request.args.get('userId')
 

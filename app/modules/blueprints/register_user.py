@@ -1,11 +1,12 @@
 from flask import request, jsonify, Response
 from modules.utils.logger import logger
 from modules.utils.database import db
+from modules.utils.request import remote_addr
 from typing import Any
 
 def route() -> tuple[Response, int]:
     try:
-        logger.info(f"Incoming /register-user request from {request.remote_addr}")
+        logger.info(f"Incoming /register-user request from {remote_addr}")
 
         data: dict[str, Any] = request.get_json()
 

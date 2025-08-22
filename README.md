@@ -24,7 +24,7 @@ A companion API for my vscode-status-extension VSCode extension.
 3. Set up .env file:
    1. Copy .env.example to .env
    2. Fill in the required values:
-      - `DISCORD_WEBHOOK_URL` - Optional URL for a Discord webhook to send API logs to.
+   - `DISCORD_WEBHOOK_URL` - Optional URL for a Discord webhook. When set, the API will capture all stdout and stderr (including logs and print statements) and forward them to the webhook in small batches.
       - `CLOUDFLARE_TUNNEL` - Set to `"true"` if you are using a Cloudflare tunnel, `"false"` (default) if not.
       - `RATE_LIMITING` - Set to `"true"` to enable IP-based rate limiting, `"false"` to disable it. If you choose to use rate limiting you will need Memcached running on port 11211 (use WSL or Docker if on Windows). **(!! Read warning at the top of this section !!)**
 4. `cd` the `./app` directory, then run the app using `gunicorn main:app --bind 0.0.0.0:5000 --workers 4` if you need a production WSGI server, or `python3 main.py` \> follow on-screen instructions if you just want a development server.

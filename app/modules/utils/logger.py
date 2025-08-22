@@ -51,17 +51,16 @@ class Logger(logging.Formatter):
         return formatter.format(record)
 
 
-logger_fmt = Logger()
+fmt = Logger()
 
 logger = logging.getLogger("vscode-status")
 logger.setLevel(logging.DEBUG)
 
 handler = logging.StreamHandler()
-handler.setFormatter(logger_fmt)
+handler.setFormatter(fmt)
 logger.addHandler(handler)
 
-
-# thanks gpt-5 for this discord webhook handler
+# thanks for this part chatgpt
 class DiscordWebhookHandler(logging.Handler):
     def __init__(self, webhook_url: str, level: int = logging.NOTSET):
         super().__init__(level)
@@ -84,11 +83,12 @@ class DiscordWebhookHandler(logging.Handler):
                 timeout=3,
             )
         except Exception:
+            logger.error("Failed to send log to Discord webhook!")
             pass
 
 
-def _has_discord_handler(lgr: logging.Logger) -> bool:
-    for h in lgr.handlers:
+def _has_discord_handler(logr: logging.Logger) -> bool:
+    for h in logr.handlers:
         if isinstance(h, DiscordWebhookHandler):
             return True
     return False
@@ -100,4 +100,5 @@ if DISCORD_WEBHOOK_URL and not _has_discord_handler(logger):
         discord_handler.setLevel(logging.DEBUG)
         logger.addHandler(discord_handler)
     except Exception:
+        logger.error("Failed to add Discord webhook handler to logger!")
         pass

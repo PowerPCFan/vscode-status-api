@@ -4,4 +4,4 @@ flask_cors
 flask-limiter
 python-dotenv
 gunicorn
-pymemcache
+sqlalchemy

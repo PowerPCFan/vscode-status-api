@@ -31,7 +31,7 @@ def route() -> tuple[Response, int]:
             return jsonify({'message': message, 'user_id': user_id}), 201
         else:
             logger.warning(f"Failed to register user {user_id}: {message}")
-            if message == "User registered successfully":
+            if message == "User already exists":
                 return jsonify({'error': message}), 409
             else:
                 return jsonify({'error': message}), 500

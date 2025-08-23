@@ -32,5 +32,4 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
         hc_blueprint,
         us_blueprint,
         gs_blueprint,
-        # ru_blueprint
     ]

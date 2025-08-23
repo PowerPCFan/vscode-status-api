@@ -37,5 +37,5 @@ def route() -> tuple[Response, int]:
                 return jsonify({'error': message}), 500
 
     except Exception as e:
-        logger.error(f"Error in register_user route: {str(e)}")
+        logger.error(f"Error in register-user endpoint: {e}")
         return jsonify({'error': 'Internal server error'}), 500

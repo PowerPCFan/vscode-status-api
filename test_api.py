@@ -58,8 +58,8 @@ def verify_database_setup():
         return False
 
 def test_update_status():
-    """Test the update-status endpoint"""
-    print("Testing update-status endpoint (new user)...")
+    """Test the update-status endpoint with non-existent user"""
+    print("Testing update-status endpoint (non-existent user)...")
     
     url = f"{BASE_URL}/update-status"
     headers = {
@@ -80,7 +80,7 @@ def test_update_status():
         response = requests.post(url, headers=headers, json=data)
         print(f"Status Code: {response.status_code}")
         print(f"Response: {response.json()}")
-        return response.status_code == 201  # Expecting 201 for new user
+        return response.status_code == 404  # Expecting 404 for non-existent user
     except Exception as e:
         print(f"Error: {e}")
         return False

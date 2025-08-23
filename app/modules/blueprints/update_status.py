@@ -51,16 +51,14 @@ def route() -> tuple[Response, int]:
         success, message, is_new_user = db.update_status(user_id, auth_token, status_data)
 
         if success:
-            if is_new_user:
-                logger.info(f"New user {user_id} registered and status updated")
-                return jsonify({'message': 'User registered and status updated successfully', 'user_id': user_id, 'new_user': True}), 201
-            else:
-                logger.info(f"Status updated successfully for existing user {user_id}")
-                return jsonify({'message': message, 'user_id': user_id, 'new_user': False}), 200
+            logger.info(f"Status updated successfully for user {user_id}")
+            return jsonify({'message': message, 'user_id': user_id}), 200
         else:
             logger.warning(f"Failed to update status for user {user_id}: {message}")
             if "Authentication failed" in message:
                 return jsonify({'error': message}), 401
+            elif "User not found" in message:
+                return jsonify({'error': message}), 404
             else:
                 return jsonify({'error': message}), 500
 

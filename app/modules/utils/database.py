@@ -103,22 +103,8 @@ class Database:
                     session.commit()
                     return True, "Status updated successfully", False
                 else:
-                    created = True
-                    try:
-                        self._create_user(session, user_id, auth_token)
-                    except IntegrityError:
-                        created = False
-
-                    if not created:
-                        if not self.authenticate_user(session, user_id, auth_token):
-                            return False, "Authentication failed: Invalid user ID or token", False
-                        self._update_user_status(session, user_id, status_data)
-                        session.commit()
-                        return True, "Status updated successfully", False
-
-                    self._update_user_status(session, user_id, status_data)
-                    session.commit()
-                    return True, "Status updated successfully", True
+                    # User doesn't exist - return error instead of creating new user
+                    return False, "User not found: Please register first before updating status", False
 
         except SQLAlchemyError as e:
             logger.error(f"Failed to update status for user {user_id}: {e}")

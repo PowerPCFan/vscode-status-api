@@ -38,8 +38,26 @@ def route() -> tuple[Response, int]:
             logger.info(f"User not found: {user_id}")
             return jsonify({'error': 'User not found'}), 404
 
+        new_data = {
+            "created_at": status_data.get("created_at", ""),
+            "last_updated": status_data.get("last_updated", ""),
+            "status": {
+                "appName": status_data.get("appName", ""),
+                "details": status_data.get("details", ""),
+                "fileName": status_data.get("fileName", ""),
+                "gitBranch": status_data.get("gitBranch", ""),
+                "gitRepo": status_data.get("gitRepo", ""),
+                "isDebugging": status_data.get("isDebugging", ""),
+                "language": status_data.get("language", ""),
+                "languageIcon": status_data.get("languageIcon", ""),
+                "timestamp": status_data.get("timestamp", ""),
+                "workspace": status_data.get("workspace", ""),
+            },
+            "user_id": status_data.get("user_id", ""),
+        }
+
         logger.info(f"Status retrieved successfully for user {user_id}")
-        return jsonify(status_data), 200
+        return jsonify(new_data), 200
 
     except Exception as e:
         logger.error(f"Error in get_status route: {e}")

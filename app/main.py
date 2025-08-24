@@ -1,9 +1,10 @@
 # stdlib
 import sys
 # 3rd party
-from flask import Flask, request
+from flask import Flask, jsonify
 from flask_cors import CORS
-import flask_limiter
+from flask_limiter import Limiter
+from flask_limiter.errors import RateLimitExceeded
 # local
 from modules.blueprint_tools import create_blueprints
 from modules.utils.gv import RATE_LIMITING
@@ -14,11 +15,18 @@ CORS(app)
 
 limiter = None
 if RATE_LIMITING:
-    limiter = flask_limiter.Limiter(
+    limiter = Limiter(
         app=app,
         key_func=_get_client_ip,
         storage_uri="memcached://localhost:11211",
     )
+
+    @app.errorhandler(RateLimitExceeded)
+    def ratelimit_handler(e: RateLimitExceeded):
+        return jsonify({
+            "error": "rate_limit_exceeded",
+            "message": str(e.description)
+        }), 429
 
 for bp in create_blueprints(limiter):
     app.register_blueprint(bp)

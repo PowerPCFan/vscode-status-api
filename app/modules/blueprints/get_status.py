@@ -38,20 +38,22 @@ def route() -> tuple[Response, int]:
             logger.info(f"User not found: {user_id}")
             return jsonify({'error': 'User not found'}), 404
 
+        status_data_status: dict[str, str] = status_data.get("status", {})
+
         new_data = {
             "created_at": status_data.get("created_at", ""),
             "last_updated": status_data.get("last_updated", ""),
             "status": {
-                "appName": status_data.get("appName", ""),
-                "details": status_data.get("details", ""),
-                "fileName": status_data.get("fileName", ""),
-                "gitBranch": status_data.get("gitBranch", ""),
-                "gitRepo": status_data.get("gitRepo", ""),
-                "isDebugging": status_data.get("isDebugging", ""),
-                "language": status_data.get("language", ""),
-                "languageIcon": status_data.get("languageIcon", ""),
-                "timestamp": status_data.get("timestamp", ""),
-                "workspace": status_data.get("workspace", ""),
+                "appName": status_data_status.get("appName", ""),
+                "details": status_data_status.get("details", ""),
+                "fileName": status_data_status.get("fileName", ""),
+                "gitBranch": status_data_status.get("gitBranch", ""),
+                "gitRepo": status_data_status.get("gitRepo", ""),
+                "isDebugging": status_data_status.get("isDebugging", ""),
+                "language": status_data_status.get("language", ""),
+                "languageIcon": status_data_status.get("languageIcon", ""),
+                "timestamp": status_data_status.get("timestamp", ""),
+                "workspace": status_data_status.get("workspace", ""),
             },
             "user_id": status_data.get("user_id", ""),
         }

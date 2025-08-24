@@ -2,6 +2,7 @@ from flask import request, jsonify, Response
 from modules.utils.logger import logger
 from modules.utils.database import db
 from modules.utils.request import remote_addr
+from modules.utils.language_image import get as get_language_image
 
 # Returns something like this:
 
@@ -40,18 +41,22 @@ def route() -> tuple[Response, int]:
 
         status_data_status: dict[str, str] = status_data.get("status", {})
 
+        language = status_data_status.get("language", "")
+        filename = status_data_status.get("fileName", "")
+        language_image = get_language_image(language, filename)
+
         new_data = {
             "created_at": status_data.get("created_at", ""),
             "last_updated": status_data.get("last_updated", ""),
             "status": {
                 "appName": status_data_status.get("appName", ""),
                 "details": status_data_status.get("details", ""),
-                "fileName": status_data_status.get("fileName", ""),
+                "fileName": filename,
                 "gitBranch": status_data_status.get("gitBranch", ""),
                 "gitRepo": status_data_status.get("gitRepo", ""),
                 "isDebugging": status_data_status.get("isDebugging", ""),
-                "language": status_data_status.get("language", ""),
-                "languageIcon": status_data_status.get("languageIcon", ""),
+                "language": language,
+                "languageIcon": language_image,
                 "timestamp": status_data_status.get("timestamp", ""),
                 "workspace": status_data_status.get("workspace", ""),
             },

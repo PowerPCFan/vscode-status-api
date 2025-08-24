@@ -127,6 +127,35 @@ class Database:
             logger.error(f"Failed to register user {user_id}: {e}")
             return False, "Database error: Failed to register user"
 
+    def delete_user(self, user_id: str, auth_token: str) -> tuple[bool, str]:
+        try:
+            with self.SessionLocal() as session:
+                user = self._select_user_by_user_id(session, user_id)
+                if not user:
+                    return False, "User does not exist"
+
+                if user.auth_token != auth_token:
+                    return False, "Authentication failed: Invalid token"
+
+                session.delete(user)
+                session.commit()
+                return True, "User deleted successfully"
+        except SQLAlchemyError as e:
+            logger.error(f"Failed to delete user {user_id}: {e}")
+            return False, "Database error: Failed to delete user"
+
+    def check_if_user_exists(self, user_id: str) -> tuple[bool, str]:
+        try:
+            with self.SessionLocal() as session:
+                user_exists = self._user_exists(session, user_id)
+                if user_exists:
+                    return True, "User exists"
+                else:
+                    return False, "User does not exist"
+        except SQLAlchemyError as e:
+            logger.error(f"Failed to check if user exists {user_id}: {e}")
+            return False, "Database error: Failed to check user existence"
+
     def get_status(self, user_id: str) -> Optional[Dict[str, Any]]:
         try:
             self.cleanup_old_status(user_id)

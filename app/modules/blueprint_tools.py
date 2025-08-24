@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_limiter import Limiter
-from .blueprints import update_status, get_status, healthcheck, register_user
+from .blueprints import update_status, get_status, healthcheck, register_user, delete_user, check_if_user_exists
 
 def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
     if limiter:
@@ -14,7 +14,13 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
         gs_blueprint.route('/get-status', methods=['GET'])(limiter.limit("45 per minute")(get_status.route))
 
         ru_blueprint = Blueprint('register_user', __name__)
-        ru_blueprint.route('/register-user', methods=['POST'])(limiter.limit("5 per hour")(register_user.route))
+        ru_blueprint.route('/register-user', methods=['POST'])(limiter.limit("5 per day")(register_user.route))
+
+        du_blueprint = Blueprint('delete_user', __name__)
+        du_blueprint.route('/delete-user', methods=['DELETE'])(limiter.limit("10 per day")(delete_user.route))
+
+        ciue_blueprint = Blueprint('check_if_user_exists', __name__)
+        ciue_blueprint.route('/check-if-user-exists', methods=['GET'])(limiter.limit("45 per minute")(check_if_user_exists.route))
     else:
         hc_blueprint = Blueprint('health_check', __name__)
         hc_blueprint.route('/', methods=['GET'])(healthcheck.route)
@@ -28,9 +34,17 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
         ru_blueprint = Blueprint('register_user', __name__)
         ru_blueprint.route('/register-user', methods=['POST'])(register_user.route)
 
+        du_blueprint = Blueprint('delete_user', __name__)
+        du_blueprint.route('/delete-user', methods=['DELETE'])(delete_user.route)
+
+        ciue_blueprint = Blueprint('check_if_user_exists', __name__)
+        ciue_blueprint.route('/check-if-user-exists', methods=['GET'])(check_if_user_exists.route)
+
     return [
         hc_blueprint,
         us_blueprint,
         gs_blueprint,
-        ru_blueprint
+        ru_blueprint,
+        du_blueprint,
+        ciue_blueprint
     ]

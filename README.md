@@ -2,14 +2,22 @@
 
 A companion API for my vscode-status-extension VSCode extension.
 
+My public instance of the API is https://vscode-status.powerpcfan.xyz/ . I have rate limited all the endpoints on an IP basis to avoid abuse:
+- 
+
 ## API endpoints:
 
 > [!TIP]
 > Use the /get-status endpoint along with ?userId=YOUR_USER_ID (found in settings of the extension) to retrieve your VSCode status to be displayed on your website!
 
-- GET `https://vscode-status.powerpcfan.xyz/` - health check endpoint, returns `{"message": "OK"}` if OK
-- POST `https://vscode-status.powerpcfan.xyz/update-status` - update's user's status. Requires token and user ID. 
-- GET `https://vscode-status.powerpcfan.xyz/get-status` - retrieves the user's status from the API. You only need the user ID.
+- GET `/` (health check endpoint, returns `{"message": "OK"}` if OK)
+- POST `/update-status` (update's user's status. Requires token and user ID.)
+- GET `/get-status` (retrieves the user's status from the API. You only need the user ID.)
+- POST `/register-user` (registers a new user. Requires user ID and auth token.)
+- DELETE `/delete-user` (deletes a user. Requires user ID and auth token.)
+
+## Expected request body for POST endpoints
+didnt write this part yet
 
 ## Self-hosting instructions:
 

@@ -5,3 +5,4 @@ flask-limiter
 python-dotenv
 gunicorn
 sqlalchemy
+pymemcache

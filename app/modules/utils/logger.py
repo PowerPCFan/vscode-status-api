@@ -1,5 +1,6 @@
 import logging
 import time
+import threading
 import requests
 from .gv import DISCORD_WEBHOOK_URL
 
@@ -76,14 +77,22 @@ class DiscordWebhookHandler(logging.Handler):
             global _discord_webhook_send_count
             _discord_webhook_send_count += 1
             if _discord_webhook_send_count == 1:
-                content = "_ _ \n_ _ \n_ _ \n" + content
-            requests.post(
-                self.webhook_url,
-                json={"content": content},
-                timeout=3,
-            )
+                content = "_ _ \n_ _ \n_ _ \n" + content # add newlines at the beginning of first log to separate logs
+
+            def send():
+                try:
+                    requests.post(
+                        self.webhook_url,
+                        json={"content": content},
+                        timeout=3
+                    )
+                except Exception:
+                    print("[ ERROR ] Failed to send log to Discord webhook!") # use print so i don't cause an infinite loop of errors
+
+            threading.Thread(target=send, daemon=True).start()
+
         except Exception:
-            logger.error("Failed to send log to Discord webhook!")
+            print("[ ERROR ] Failed to send log to Discord webhook!") # use print so i don't cause an infinite loop of errors
             pass
 
 

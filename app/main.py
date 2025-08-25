@@ -32,5 +32,5 @@ for bp in create_blueprints(limiter):
     app.register_blueprint(bp)
 
 if __name__ == '__main__':
-    i = input("Type 1 to start development server, 0 to cancel: ")
-    app.run(host='127.0.0.1', port=5000, debug=False) if i == '1' else sys.exit(0)
+    i = input("Type 1 to start development server, 0 to cancel (default 1): ")
+    sys.exit(0) if i == '0' else app.run(host='127.0.0.1', port=5000, debug=False)

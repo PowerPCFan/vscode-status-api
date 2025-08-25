@@ -12,6 +12,7 @@ My public instance of the API is https://vscode-status.powerpcfan.xyz/ . I have 
 
 #### GET
 - `/` (health check endpoint, returns `{"message": "OK"}` if OK)
+- `/trigger-rate-limit` (endpoint meant to test rate limiter - limited to 1 request/min - **this endpoint only exists if rate limiting is enabled in .env**)
 - `/get-status` (retrieves the user's status from the API. You only need the user ID.)
 - `/check-if-user-exists` (checks if a user exists. Requires user ID.)
 

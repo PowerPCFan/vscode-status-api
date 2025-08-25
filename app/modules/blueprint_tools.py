@@ -1,8 +1,8 @@
 from flask import Blueprint
 from flask_limiter import Limiter
-from .blueprints import update_status, get_status, healthcheck, register_user, delete_user, check_if_user_exists
+from .blueprints import update_status, get_status, healthcheck, trigger_rate_limit, register_user, delete_user, check_if_user_exists
 
-def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
+def create_blueprints(limiter: Limiter | None) -> list[Blueprint | None]:
     if limiter:
         hc_blueprint = Blueprint('health_check', __name__)
         hc_blueprint.route('/', methods=['GET'])(limiter.limit("60 per minute")(healthcheck.route))
@@ -21,6 +21,10 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
 
         ciue_blueprint = Blueprint('check_if_user_exists', __name__)
         ciue_blueprint.route('/check-if-user-exists', methods=['GET'])(limiter.limit("45 per minute")(check_if_user_exists.route))
+
+        trl_blueprint = Blueprint('trigger_rate_limit', __name__)
+        trl_blueprint.route('/trigger-rate-limit', methods=['GET'])(limiter.limit("1 per minute")(trigger_rate_limit.route))
+
     else:
         hc_blueprint = Blueprint('health_check', __name__)
         hc_blueprint.route('/', methods=['GET'])(healthcheck.route)
@@ -40,11 +44,14 @@ def create_blueprints(limiter: Limiter | None) -> list[Blueprint]:
         ciue_blueprint = Blueprint('check_if_user_exists', __name__)
         ciue_blueprint.route('/check-if-user-exists', methods=['GET'])(check_if_user_exists.route)
 
+        trl_blueprint = None  # useless if rate limiting is off
+
     return [
         hc_blueprint,
         us_blueprint,
         gs_blueprint,
         ru_blueprint,
         du_blueprint,
-        ciue_blueprint
+        ciue_blueprint,
+        trl_blueprint
     ]

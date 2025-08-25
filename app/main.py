@@ -1,14 +1,15 @@
 # stdlib
 import sys
 # 3rd party
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.errors import RateLimitExceeded
 # local
 from modules.blueprint_tools import create_blueprints
 from modules.utils.gv import RATE_LIMITING
-from modules.utils.request import _get_client_ip
+from modules.utils.request import _get_client_ip, remote_addr
+from modules.utils.logger import logger
 
 app = Flask(__name__)
 CORS(app)
@@ -23,13 +24,15 @@ if RATE_LIMITING:
 
     @app.errorhandler(RateLimitExceeded)
     def ratelimit_handler(e: RateLimitExceeded):
+        logger.warning(f"User {remote_addr} has exceeded rate limit of \"{e.description}\" for endpoint {request.path}")
         return jsonify({
             "error": "rate_limit_exceeded",
             "message": str(e.description)
         }), 429
 
 for bp in create_blueprints(limiter):
-    app.register_blueprint(bp)
+    if bp is not None:
+        app.register_blueprint(bp)
 
 if __name__ == '__main__':
     i = input("Type 1 to start development server, 0 to cancel (default 1): ")

@@ -7,14 +7,20 @@ My public instance of the API is https://vscode-status.powerpcfan.xyz/ . I have 
 
 ## API endpoints:
 
-> [!TIP]
-> Use the /get-status endpoint along with ?userId=YOUR_USER_ID (found in settings of the extension) to retrieve your VSCode status to be displayed on your website!
+> [!NOTE]
+> Generally, the GET endpoints only require a user ID or no form of authentication, and the POST/DELETE endpoints require a user ID and token.
 
-- GET `/` (health check endpoint, returns `{"message": "OK"}` if OK)
-- POST `/update-status` (update's user's status. Requires token and user ID.)
-- GET `/get-status` (retrieves the user's status from the API. You only need the user ID.)
-- POST `/register-user` (registers a new user. Requires user ID and auth token.)
-- DELETE `/delete-user` (deletes a user. Requires user ID and auth token.)
+#### GET
+- `/` (health check endpoint, returns `{"message": "OK"}` if OK)
+- `/get-status` (retrieves the user's status from the API. You only need the user ID.)
+- `/check-if-user-exists` (checks if a user exists. Requires user ID.)
+
+#### POST
+- `/update-status` (update's user's status. Requires token and user ID.)
+- `/register-user` (registers a new user. Requires user ID and auth token.)
+
+#### DELETE
+- `/delete-user` (deletes a user. Requires user ID and auth token.)
 
 ## Expected request body for POST endpoints
 didnt write this part yet

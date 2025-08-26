@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, Integer, String, Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from .logger import logger
 
+
 class Base(DeclarativeBase):
     pass
 
@@ -36,7 +37,7 @@ class Database:
 
     def _init_database(self):
         try:
-            Base.metadata.create_all(bind=self.engine)
+            Base.metadata.create_all(bind=self.engine, checkfirst=True)
             logger.info("Telemetry database initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize telemetry database: {e}")

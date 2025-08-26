@@ -40,7 +40,11 @@ class Database:
             Base.metadata.create_all(bind=self.engine, checkfirst=True)
             logger.info("Telemetry database initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize telemetry database: {e}")
+            if "index ix_telemetry_timestamp already exists" in str(e):
+                # this is just a race condition for creating the index which can happen when using multiple workers
+                pass
+            else:
+                logger.error(f"Failed to initialize telemetry database: {e}")
 
     def get_session(self):
         return self.SessionLocal()

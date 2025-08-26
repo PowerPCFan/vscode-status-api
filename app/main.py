@@ -1,18 +1,36 @@
 # stdlib
 import sys
 # 3rd party
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.errors import RateLimitExceeded
 # local
 from modules.blueprint_tools import create_blueprints
-from modules.utils.gv import RATE_LIMITING
+from modules.utils.gv import RATE_LIMITING, TELEMETRY_DISCORD_WEBHOOK_URL
+from modules.utils.telemetry import start_telemetry
+from modules.utils.telemetry_db import db
 from modules.utils.request import _get_client_ip, remote_addr
 from modules.utils.logger import logger
 
 app = Flask(__name__)
 CORS(app)
+
+#* this will only start if the URL provided is not None,
+#* and TELEMETRY_DISCORD_WEBHOOK_URL is None if not provided
+start_telemetry(TELEMETRY_DISCORD_WEBHOOK_URL)
+
+@app.after_request
+def telemetry_logger(response: Response) -> Response:
+    ip: str = str(remote_addr)
+    endpoint: str = request.path
+    method: str = request.method
+    status: int = response.status_code
+
+    if not "favicon.ico" in endpoint:
+        db.log_request(ip=ip, endpoint=endpoint, method=method, status=status)
+
+    return response #? no clue why i need to do this
 
 limiter = None
 if RATE_LIMITING:

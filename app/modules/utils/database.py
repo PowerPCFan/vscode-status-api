@@ -47,9 +47,9 @@ class Database:
     def _init_database(self):
         try:
             Base.metadata.create_all(bind=self.engine)
-            logger.info("Database initialized successfully")
+            logger.info("Main database initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize database: {e}")
+            logger.error(f"Failed to initialize main database: {e}")
 
     def _select_user_by_user_id(self, session: Session, user_id: str) -> User | None:
         user = session.execute(select(User).where(User.user_id == user_id)).scalar_one_or_none()

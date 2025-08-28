@@ -1,5 +1,6 @@
 import time
 from threading import Thread
+from tzlocal import get_localzone
 from zoneinfo import ZoneInfo
 from enum import Enum
 from datetime import datetime, timezone
@@ -9,8 +10,12 @@ from .webhook_sender import send
 from .logger import logger
 
 
-EVERY_3_MINUTES_ENABLED = True
-EST = ZoneInfo("America/New_York")
+EVERY_3_MINUTES_ENABLED = False  # enable for debug only
+
+try:
+    LOCAL_TIMEZONE = ZoneInfo(get_localzone().key)
+except Exception:
+    LOCAL_TIMEZONE = timezone.utc
 
 
 class ReportType(Enum):
@@ -95,8 +100,8 @@ def send_list(type_: ReportType, period: str, url: str, start_ts: int, end_ts: i
                 for endpoint, hits in sorted(by_ip[ip].items(), key=lambda kv: (-kv[1], kv[0])):
                     lines.append(f"  - `{endpoint}`: {str(hits)} request{'' if int(hits) == 1 else 's'}")
 
-    date_str = datetime.fromtimestamp(end_ts, tz=EST).strftime("%m/%d/%Y, %H:%M Eastern Time")
-    header = f"# {period.capitalize()} {title} ({date_str})\n"
+    date_str = datetime.fromtimestamp(end_ts, tz=LOCAL_TIMEZONE).strftime(f"%m/%d/%Y, %H:%M")
+    header = f"# Telemetry: {title} ({date_str} ({LOCAL_TIMEZONE}))\n"
     content = header + "\n".join(lines)
     chunks = chunk_text(content)
 

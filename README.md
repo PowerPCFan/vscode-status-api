@@ -1,9 +1,8 @@
 # vscode-status-api
 
-A companion API for my vscode-status-extension VSCode extension.
+A companion API for my vscode-status-extension VSCode extension. [Download the extension here!](https://marketplace.visualstudio.com/items?itemName=powerpcfan.vscode-status-extension)
 
-My public instance of the API is https://vscode-status.powerpcfan.xyz/ . I have rate limited all the endpoints on an IP basis to avoid abuse:
-- 
+My public instance of the API is https://vscode-status.powerpcfan.xyz/ . I have rate limited all the endpoints on an IP basis to avoid abuse.
 
 ## API endpoints:
 

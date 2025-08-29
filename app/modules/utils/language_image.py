@@ -19,7 +19,11 @@ def _get_imgurl(image_name: str) -> str:
     return f"https://raw.githubusercontent.com/PowerPCFan/vscode-status-api/refs/heads/master/assets/icons/{image_name}.png"
 
 
-def get(language: str, filename: str) -> str:
+def get(language: str, filename: str, idling: bool) -> str:
+    #* handle idle state
+    if idling:
+        return _get_imgurl("idle")
+
     #* preferred method: known languages
     for lang_obj in known_languages:
         if lang_obj["language"] == language:

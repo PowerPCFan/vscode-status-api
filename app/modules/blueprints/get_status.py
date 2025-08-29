@@ -3,26 +3,7 @@ from modules.utils.logger import logger
 from modules.utils.database import db
 from modules.utils.request import remote_addr
 from modules.utils.language_image import get as get_language_image
-
-# Returns something like this:
-
-# {
-#   "created_at": "2025-08-22T11:49:09.125405",
-#   "last_updated": "2025-08-22T08:55:42.766476",
-#   "status": {
-#     "appName": "Visual Studio Code",
-#     "details": "Editing file.py",
-#     "fileName": "file.py",
-#     "gitBranch": "master",
-#     "gitRepo": "",
-#     "isDebugging": false,
-#     "language": "python",
-#     "languageIcon": "https://raw.githubusercontent.com/PowerPCFan/vscode-status-extension/refs/heads/master/assets/icons/python.png",
-#     "timestamp": 1755863352174,
-#     "workspace": "vscode-workspace-name"
-#   },
-#   "user_id": "1234567890123456"
-# }
+from typing import Any  # me when im mad at type checking:
 
 def route() -> tuple[Response, int]:
     try:
@@ -39,13 +20,14 @@ def route() -> tuple[Response, int]:
             logger.info(f"User not found: {user_id}")
             return jsonify({'error': 'User not found'}), 404
 
-        status_data_status: dict[str, str] = status_data.get("status", {})
+        status_data_status: dict[str, Any] = status_data.get("status", {})
 
-        language = status_data_status.get("language", "")
-        filename = status_data_status.get("fileName", "")
-        language_image = get_language_image(language, filename)
+        language: str = status_data_status.get("language", "")
+        filename: str = status_data_status.get("fileName", "")
+        idling: bool = status_data_status.get("isIdling", False)
+        language_image = get_language_image(language, filename, idling)
 
-        new_data = {
+        new_data: dict[str, str | dict[str, str | bool]] = {
             "created_at": status_data.get("created_at", ""),
             "last_updated": status_data.get("last_updated", ""),
             "status": {
@@ -55,6 +37,7 @@ def route() -> tuple[Response, int]:
                 "gitBranch": status_data_status.get("gitBranch", ""),
                 "gitRepo": status_data_status.get("gitRepo", ""),
                 "isDebugging": status_data_status.get("isDebugging", ""),
+                "isIdling": idling,
                 "language": language,
                 "languageIcon": language_image,
                 "timestamp": status_data_status.get("timestamp", ""),

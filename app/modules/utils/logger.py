@@ -22,7 +22,7 @@ ORANGE = f"{ANSI}38;5;208m"
 class Logger(logging.Formatter):
     def __init__(self):
         super().__init__()
-        self._format = f"[ %(levelname)s ]    %(message)s    [%(asctime)s (%(filename)s:%(funcName)s)]"
+        self._format = "[ %(levelname)s ]    %(message)s    [%(asctime)s (%(filename)s:%(funcName)s)]"
 
         self.FORMATS = {
             logging.DEBUG: self._format,
@@ -60,6 +60,7 @@ handler = logging.StreamHandler()
 handler.setFormatter(fmt)
 logger.addHandler(handler)
 
+
 # thanks for this part chatgpt
 class DiscordWebhookHandler(logging.Handler):
     def __init__(self, webhook_url: str, level: int = logging.NOTSET):
@@ -76,12 +77,12 @@ class DiscordWebhookHandler(logging.Handler):
             global _discord_webhook_send_count
             _discord_webhook_send_count += 1
             if _discord_webhook_send_count == 1:
-                content = "_ _ \n_ _ \n_ _ \n" + content # add newlines at the beginning of first log to separate logs
+                content = "_ _ \n_ _ \n_ _ \n" + content  # add newlines at the beginning of first log to separate logs
 
             webhook_sender.send(self.webhook_url, content)
 
         except Exception:
-            print("[ ERROR ] Failed to send log to Discord webhook!") # use print so i don't cause an infinite loop of errors
+            print("[ ERROR ] Failed to send log to Discord webhook!")  # use print so i don't cause an infinite loop of errors  # noqa: E501
             pass
 
 

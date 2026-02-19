@@ -2,7 +2,7 @@ from flask import request, jsonify, Response
 from modules.utils.logger import logger
 from modules.utils.database import db
 from modules.utils.request import remote_addr
-from typing import Any
+
 
 def route() -> tuple[Response, int]:
     try:

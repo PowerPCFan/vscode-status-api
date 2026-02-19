@@ -100,7 +100,7 @@ def send_list(type_: ReportType, period: str, url: str, start_ts: int, end_ts: i
                 for endpoint, hits in sorted(by_ip[ip].items(), key=lambda kv: (-kv[1], kv[0])):
                     lines.append(f"  - `{endpoint}`: {str(hits)} request{'' if int(hits) == 1 else 's'}")
 
-    date_str = datetime.fromtimestamp(end_ts, tz=LOCAL_TIMEZONE).strftime(f"%m/%d/%Y, %H:%M Local Time")
+    date_str = datetime.fromtimestamp(end_ts, tz=LOCAL_TIMEZONE).strftime("%m/%d/%Y, %H:%M Local Time")
     header = f"# Telemetry: {title} ({date_str})\n"
     content = header + "\n".join(lines)
     chunks = chunk_text(content)
@@ -127,6 +127,7 @@ def send_list(type_: ReportType, period: str, url: str, start_ts: int, end_ts: i
             session.commit()
             logger.info(f"Created new {period} {type_.value} tracker")
 
+
 def check_and_send_report(period: str, type_: ReportType, url: str):
     now = datetime.now(timezone.utc)
     now_ts = int(now.timestamp())
@@ -144,6 +145,7 @@ def check_and_send_report(period: str, type_: ReportType, url: str):
             logger.info(f"Sending {period} {type_.value} report...")
             send_list(type_, period, url, start_ts=last_sent, end_ts=now_ts)
 
+
 def _start_telemetry(url: str):
     CHECK_INTERVAL = 5 * 60
 
@@ -159,6 +161,7 @@ def _start_telemetry(url: str):
         except Exception as e:
             logger.error(f"Error in telemetry loop: {e}")
             time.sleep(10)
+
 
 def start_telemetry(url: str | None = None):
     try:

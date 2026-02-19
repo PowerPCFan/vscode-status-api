@@ -4,6 +4,7 @@ from modules.utils.database import db
 from modules.utils.request import remote_addr
 from typing import Any
 
+
 def route() -> tuple[Response, int]:
     try:
         logger.info(f"Incoming /delete-user request from {remote_addr}")

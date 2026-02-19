@@ -7,11 +7,11 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from modules.utils.logger import logger
 
 
-#* notice to anyone reading this code:
-#* this is my first time ever using SQL and SQLAlchemy, 
-#* and I'm pretty sure I used some outdated functions
-#* and mixed SQLAlchemy 1.0 and 2.0 stuff,
-#* and "core" and ORM stuff
+# notice to anyone reading this code:
+# this is my first time ever using SQL and SQLAlchemy,
+# and I'm pretty sure I used some outdated functions
+# and mixed SQLAlchemy 1.0 and 2.0 stuff,
+# and "core" and ORM stuff
 
 
 def DATETIME_NOW() -> str:
@@ -26,7 +26,7 @@ class User(Base):
     __tablename__ = "users"
 
     # user id and auth token can be changed by the user in the extension so i dont want to enforce a strict limit,
-    # but i figured 32 chars for user id and 128 chars for token are reasonable limits regardless of what the user inputs
+    # but i figured 32 chars for user id and 128 chars for token are reasonable limits regardless of what the user inputs  # noqa: E501
     user_id: Mapped[str] = MappedColumn(String(32), primary_key=True)
     auth_token: Mapped[str] = MappedColumn(String(128), nullable=False)
 
@@ -55,7 +55,14 @@ class Database:
         user = session.execute(select(User).where(User.user_id == user_id)).scalar_one_or_none()
         return user
 
-    def _create_user(self, session: Session, user_id: str, auth_token: str, status_data: Optional[Dict[str, Any]] = None, set_last_updated: bool = False) -> None:
+    def _create_user(
+        self,
+        session: Session,
+        user_id: str,
+        auth_token: str,
+        status_data: Optional[Dict[str, Any]] = None,
+        set_last_updated: bool = False
+    ) -> None:
         now: str = DATETIME_NOW()
 
         user = User(
@@ -70,7 +77,7 @@ class Database:
 
         try:
             session.add(user)
-            session.flush() # apparently im supposed to flush here instead of commit 
+            session.flush()  # apparently im supposed to flush here instead of commit
         except Exception as e:
             logger.error(f"Failed to create user {user_id}: {e}")
             raise
@@ -212,7 +219,7 @@ class Database:
                     session.commit()
                     logger.info(f"Cleared status data for user {user_id} with NULL last_updated timestamp")
                     return True
-                
+
                 # Parse the timestamp and check if it's older than the cutoff
                 last_updated_time = datetime.fromisoformat(last_updated)
                 cutoff_time = datetime.now(tz=timezone.utc) - timedelta(minutes=max_age_minutes)
@@ -222,7 +229,7 @@ class Database:
                     user.last_updated = None
 
                     session.commit()
-                    logger.info(f"Cleared status data for inactive user {user_id} (last updated: {last_updated}, older than {max_age_minutes} minutes)")
+                    logger.info(f"Cleared status data for inactive user {user_id} (last updated: {last_updated}, older than {max_age_minutes} minutes)")  # noqa: E501
                     return True
                 else:
                     return False

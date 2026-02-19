@@ -4,6 +4,7 @@ from modules.utils.database import db
 from modules.utils.request import remote_addr
 from typing import Any
 
+
 # expects a json payload like this:
 
 # {
@@ -14,7 +15,7 @@ from typing import Any
 #     'gitRepo': '',
 #     'isDebugging': False,
 #     'language': 'python',
-#     'languageIcon': 'https://raw.githubusercontent.com/PowerPCFan/vscode-status-extension/refs/heads/main/assets/icons/python.png',
+#     'languageIcon': 'https://raw.githubusercontent.com/PowerPCFan/vscode-status-extension/refs/heads/main/assets/icons/python.png',  # noqa: E501
 #     'timestamp': 1755863352174,
 #     'userId': '8551517423728874',
 #     'workspace': 'vscode-status-api'

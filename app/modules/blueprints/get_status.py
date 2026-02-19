@@ -3,7 +3,8 @@ from modules.utils.logger import logger
 from modules.utils.database import db
 from modules.utils.request import remote_addr
 from modules.utils.language_image import get as get_language_image
-from typing import Any  # me when im mad at type checking:
+from typing import Any
+
 
 def route() -> tuple[Response, int]:
     try:

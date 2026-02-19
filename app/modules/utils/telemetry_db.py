@@ -17,7 +17,11 @@ class Telemetry(Base):
     endpoint: Mapped[str] = MappedColumn(String(255), nullable=False)
     method: Mapped[str] = MappedColumn(String(10), nullable=False)
     status: Mapped[int] = MappedColumn(Integer, nullable=False)
-    timestamp: Mapped[int] = MappedColumn(Integer, default=lambda: int(datetime.now(timezone.utc).timestamp()), index=True)
+    timestamp: Mapped[int] = MappedColumn(
+        Integer,
+        default=lambda: int(datetime.now(timezone.utc).timestamp()),
+        index=True
+    )
 
 
 class WebhookTracker(Base):
